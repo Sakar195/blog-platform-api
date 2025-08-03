@@ -62,7 +62,7 @@ const updateComment = async (req, res, next) => {
     }
 
     // Check if user is the author of the comment
-    if (comment.author.toString() !== req.user.id) {
+    if (comment.author.toString() !== req.user.id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this comment" });
@@ -92,7 +92,7 @@ const deleteComment = async (req, res, next) => {
     }
 
     // Check if user is the author of the comment
-    if (comment.author.toString() !== req.user.id) {
+    if (comment.author.toString() !== req.user.id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this comment" });

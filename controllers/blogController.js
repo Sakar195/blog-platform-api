@@ -1,5 +1,6 @@
 const Blog = require("../models/Blog");
 const Tag = require("../models/Tag");
+const mongoose = require("mongoose");
 
 //Helper function to find or create tags and return their ids
 const getTagIds = async (tagNames) => {
@@ -189,15 +190,33 @@ const getBlogById = async (req, res, next) => {
 const updateBlog = async (req, res, next) => {
   try {
     const { title, description, tags } = req.body;
+    const blogId = req.params.id;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ message: "Invalid blog ID format" });
+    }
 
     // Find the blog first to check ownership
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(blogId);
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
 
     // Check if user is the author of the blog
-    if (blog.author.toString() !== req.user.id) {
+    console.log('Blog author:', blog.author);
+    console.log('Current user:', req.user.id);
+    console.log('Author toString:', blog.author ? blog.author.toString() : 'No author');
+    
+    // Handle case where blog has no author (created before authentication)
+    if (!blog.author) {
+      return res.status(403).json({ 
+        message: "This blog has no author. Please re-seed the database or create a new blog." 
+      });
+    }
+    
+    // Convert both to strings for proper comparison
+    if (blog.author.toString() !== req.user.id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this blog" });
@@ -207,7 +226,7 @@ const updateBlog = async (req, res, next) => {
     const tagIds = await getTagIds(tags);
 
     const updatedBlog = await Blog.findByIdAndUpdate(
-      req.params.id,
+      blogId,
       { title, description, tags: tagIds },
       { new: true, runValidators: true }
     )
@@ -232,7 +251,7 @@ const deleteBlog = async (req, res, next) => {
     }
 
     // Check if user is the author of the blog
-    if (blogToDelete.author.toString() !== req.user.id) {
+    if (blogToDelete.author.toString() !== req.user.id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this blog" });
