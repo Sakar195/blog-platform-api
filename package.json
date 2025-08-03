@@ -21,7 +21,6 @@
     "express-rate-limit": "^8.0.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.18.0",
     "mongoose": "^8.17.0"
   }
 }
