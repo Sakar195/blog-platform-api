@@ -258,7 +258,7 @@ GET /api/blogs
 **Example:**
 
 ```http
-GET /api/blogs?search=javascript&tags=programming,webdev&sortBy=-date&page=1&limit=5
+GET /api/blogs?search=modern&tags=programming&sortBy=-date&page=1&limit=5
 ```
 
 #### Get Single Blog (Public)
