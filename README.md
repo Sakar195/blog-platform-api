@@ -81,6 +81,7 @@ npm start
 ## Deployment
 
 This API is deployed on **Railway** and accessible at:
+
 ```
 https://blog-platform-api-production-bb0a.up.railway.app/api
 ```
@@ -90,7 +91,7 @@ https://blog-platform-api-production-bb0a.up.railway.app/api
 1. Connect your GitHub repository to Railway
 2. Set up environment variables in Railway dashboard:
    - `MONGO_URI` - Your MongoDB connection string
-   - `JWT_SECRET` - Your JWT secret key  
+   - `JWT_SECRET` - Your JWT secret key
    - `JWT_EXPIRES_IN` - Token expiration (default: 7d)
 3. **Configure MongoDB Atlas** (if using):
    - Go to MongoDB Atlas → Network Access
@@ -148,16 +149,19 @@ blog-platform-api/
 ### Base URLs
 
 **Local Development:**
+
 ```
 http://localhost:5000/api
 ```
 
 **Production (Railway):**
+
 ```
 https://blog-platform-api-production-bb0a.up.railway.app/api
 ```
 
 **Example Endpoints:**
+
 - Get all blogs: `https://blog-platform-api-production-bb0a.up.railway.app/api/blogs`
 - Register user: `https://blog-platform-api-production-bb0a.up.railway.app/api/auth/register`
 - Login user: `https://blog-platform-api-production-bb0a.up.railway.app/api/auth/login`
@@ -453,7 +457,7 @@ Common status codes:
 
 1. **Import the collection** (if available) or create requests manually
 2. **Set up environment variables**:
-   - `baseUrl`: `http://localhost:5000/api`
+   - `baseUrl`: `http://localhost:5000/api` (local) or `https://blog-platform-api-production-bb0a.up.railway.app/api` (production)
    - `token`: Your JWT token after login
 3. **For protected routes**: Add header `Authorization: Bearer {{token}}`
 
