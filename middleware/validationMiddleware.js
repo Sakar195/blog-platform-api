@@ -4,7 +4,7 @@ const validateBlog = (req, res, next) => {
   const schema = Joi.object({
     title: Joi.string().min(3).required(),
     description: Joi.string().min(10).required(),
-    tags: Joi.array().items(Joi.string()),
+    tags: Joi.string().optional(), // Allow comma-separated string or undefined
   });
 
   const { error } = schema.validate(req.body);

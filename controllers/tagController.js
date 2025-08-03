@@ -11,6 +11,9 @@ const createTag = async (req, res, next) => {
     const savedTag = await tag.save();
     res.status(201).json(savedTag);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ message: `Tag '${name}' already exists` });
+    }
     next(error);
   }
 };

@@ -3,11 +3,24 @@ const Tag = require("../models/Tag");
 
 //Helper function to find or create tags and return their ids
 const getTagIds = async (tagNames) => {
-  if (!tagNames || tagNames.length === 0) {
+  // If no tags provided, return empty array
+  if (!tagNames) {
     return [];
   }
 
-  const tagPromises = tagNames.map(async (name) => {
+  // If string is provided, split it into array
+  const tagsArray =
+    typeof tagNames === "string"
+      ? tagNames.split(",").map((tag) => tag.trim())
+      : Array.isArray(tagNames)
+        ? tagNames
+        : [];
+
+  if (tagsArray.length === 0) {
+    return [];
+  }
+
+  const tagPromises = tagsArray.map(async (name) => {
     // Find a tag or upsert if not exist
     const tag = await Tag.findOneAndUpdate(
       { name: name.toLowerCase() },
@@ -32,7 +45,7 @@ const createBlog = async (req, res, next) => {
     const newBlog = new Blog({
       title,
       description,
-      tags: tagsIds,
+      tags: tagIds,
     });
 
     const savedBlog = await newBlog.save();
