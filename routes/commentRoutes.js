@@ -9,7 +9,13 @@ const { protect } = require("../middleware/authMiddleware");
 router.get("/blog/:id", commentController.getComments);
 
 // Protected routes
-router.post("/blog/:id", protect, commentLimiter, validateComment, commentController.addComment);
+router.post(
+  "/blog/:id",
+  protect,
+  commentLimiter,
+  validateComment,
+  commentController.addComment
+);
 router.put("/:id", protect, validateComment, commentController.updateComment);
 router.delete("/:id", protect, commentController.deleteComment);
 

@@ -14,14 +14,14 @@ const addComment = async (req, res, next) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    const newComment = new Comment({ 
-      text, 
+    const newComment = new Comment({
+      text,
       blog: blogId,
-      author: req.user.id // Add author from authenticated user
+      author: req.user.id, // Add author from authenticated user
     });
     const savedComment = await newComment
       .save()
-      .then(comment => comment.populate("author", "username email"));
+      .then((comment) => comment.populate("author", "username email"));
 
     blog.comments.push(savedComment._id);
     await blog.save();
@@ -63,7 +63,9 @@ const updateComment = async (req, res, next) => {
 
     // Check if user is the author of the comment
     if (comment.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to update this comment" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this comment" });
     }
 
     const updatedComment = await Comment.findByIdAndUpdate(
@@ -91,7 +93,9 @@ const deleteComment = async (req, res, next) => {
 
     // Check if user is the author of the comment
     if (comment.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to delete this comment" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this comment" });
     }
 
     // Remove comment from the associated blog

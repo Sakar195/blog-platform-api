@@ -170,8 +170,8 @@ const getBlogById = async (req, res, next) => {
         path: "comments",
         populate: {
           path: "author",
-          select: "username email"
-        }
+          select: "username email",
+        },
       });
 
     if (!blog) {
@@ -198,7 +198,9 @@ const updateBlog = async (req, res, next) => {
 
     // Check if user is the author of the blog
     if (blog.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to update this blog" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this blog" });
     }
 
     // Convert tag names to tag IDs
@@ -209,8 +211,8 @@ const updateBlog = async (req, res, next) => {
       { title, description, tags: tagIds },
       { new: true, runValidators: true }
     )
-    .populate("tags")
-    .populate("author", "username email");
+      .populate("tags")
+      .populate("author", "username email");
 
     res.status(200).json(updatedBlog);
   } catch (error) {
@@ -231,7 +233,9 @@ const deleteBlog = async (req, res, next) => {
 
     // Check if user is the author of the blog
     if (blogToDelete.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to delete this blog" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this blog" });
     }
 
     await blogToDelete.deleteOne();

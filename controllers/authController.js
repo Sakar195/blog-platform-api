@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 // Generate JWT token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 };
 
@@ -13,11 +13,11 @@ const generateToken = (userId) => {
 // @access  Public
 const register = async (req, res, next) => {
   const { username, email, password } = req.body;
-  
+
   try {
     // Check if user already exists
     const existingUser = await User.findOne({
-      $or: [{ email }, { username }]
+      $or: [{ email }, { username }],
     });
 
     if (existingUser) {
@@ -43,8 +43,8 @@ const register = async (req, res, next) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -80,8 +80,8 @@ const login = async (req, res, next) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -103,8 +103,8 @@ const getProfile = async (req, res, next) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -123,8 +123,8 @@ const updateProfile = async (req, res, next) => {
       const existingUser = await User.findOne({
         $and: [
           { _id: { $ne: req.user.id } },
-          { $or: [{ email }, { username }] }
-        ]
+          { $or: [{ email }, { username }] },
+        ],
       });
 
       if (existingUser) {
@@ -149,8 +149,8 @@ const updateProfile = async (req, res, next) => {
         id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
-        createdAt: updatedUser.createdAt
-      }
+        createdAt: updatedUser.createdAt,
+      },
     });
   } catch (error) {
     next(error);

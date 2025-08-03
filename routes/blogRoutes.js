@@ -10,7 +10,13 @@ router.get("/", optionalAuth, blogController.getBlogs); // Optional auth to show
 router.get("/:id", optionalAuth, blogController.getBlogById); // Optional auth to show author info
 
 // Protected routes
-router.post("/", protect, strictLimiter, validateBlog, blogController.createBlog);
+router.post(
+  "/",
+  protect,
+  strictLimiter,
+  validateBlog,
+  blogController.createBlog
+);
 router.put("/:id", protect, validateBlog, blogController.updateBlog);
 router.delete("/:id", protect, blogController.deleteBlog);
 
