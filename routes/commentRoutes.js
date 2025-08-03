@@ -3,18 +3,14 @@ const router = express.Router();
 const commentController = require("../controllers/commentController");
 const { validateComment } = require("../middleware/validationMiddleware");
 const { commentLimiter, strictLimiter } = require("../middleware/rateLimiter");
+const { protect } = require("../middleware/authMiddleware");
 
-// Routes for specific blog comments
-router.post(
-  "/blog/:id",
-  commentLimiter,
-  validateComment,
-  commentController.addComment
-);
+// Public routes
 router.get("/blog/:id", commentController.getComments);
 
-// Routes for individual comments
-router.put("/:id", validateComment, commentController.updateComment);
-router.delete("/:id", commentController.deleteComment);
+// Protected routes
+router.post("/blog/:id", protect, commentLimiter, validateComment, commentController.addComment);
+router.put("/:id", protect, validateComment, commentController.updateComment);
+router.delete("/:id", protect, commentController.deleteComment);
 
 module.exports = router;

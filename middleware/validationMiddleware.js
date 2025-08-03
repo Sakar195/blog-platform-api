@@ -38,8 +38,52 @@ const validateTag = (req, res, next) => {
   next();
 };
 
+// User validation schemas
+const validateUser = (req, res, next) => {
+  const schema = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
+const validateLogin = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
+const validateUserUpdate = (req, res, next) => {
+  const schema = Joi.object({
+    username: Joi.string().min(3).max(30).optional(),
+    email: Joi.string().email().optional(),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
 module.exports = {
   validateBlog,
   validateComment,
   validateTag,
+  validateUser,
+  validateLogin,
+  validateUserUpdate,
 };

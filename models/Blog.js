@@ -13,6 +13,12 @@ const blogSchema = new mongoose.Schema({
     trim: true,
   },
 
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,

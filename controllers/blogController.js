@@ -35,7 +35,7 @@ const getTagIds = async (tagNames) => {
 
 // @desc    Create a new blog post
 // @route   POST /api/blogs
-// @access  Public
+// @access  Private
 const createBlog = async (req, res, next) => {
   try {
     const { title, description, tags } = req.body;
@@ -45,11 +45,14 @@ const createBlog = async (req, res, next) => {
     const newBlog = new Blog({
       title,
       description,
+      author: req.user.id, // Add author from authenticated user
       tags: tagIds,
     });
 
     const savedBlog = await newBlog.save();
-    const populatedBlog = await Blog.findById(savedBlog._id).populate("tags");
+    const populatedBlog = await Blog.findById(savedBlog._id)
+      .populate("tags")
+      .populate("author", "username email");
 
     res.status(201).json(populatedBlog);
   } catch (error) {
@@ -128,6 +131,7 @@ const getBlogs = async (req, res, next) => {
         .skip(skip)
         .limit(parseInt(limit))
         .populate("tags")
+        .populate("author", "username email")
         .populate("comments")
         .lean(),
       Blog.countDocuments(query),
@@ -161,7 +165,14 @@ const getBlogById = async (req, res, next) => {
   try {
     const blog = await Blog.findById(req.params.id)
       .populate("tags")
-      .populate("comments");
+      .populate("author", "username email")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "author",
+          select: "username email"
+        }
+      });
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
@@ -174,10 +185,21 @@ const getBlogById = async (req, res, next) => {
 
 // @desc    Update a blog post
 // @route   PUT /api/blogs/:id
-// @access  Public
+// @access  Private
 const updateBlog = async (req, res, next) => {
   try {
     const { title, description, tags } = req.body;
+
+    // Find the blog first to check ownership
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if user is the author of the blog
+    if (blog.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to update this blog" });
+    }
 
     // Convert tag names to tag IDs
     const tagIds = await getTagIds(tags);
@@ -186,11 +208,10 @@ const updateBlog = async (req, res, next) => {
       req.params.id,
       { title, description, tags: tagIds },
       { new: true, runValidators: true }
-    ).populate("tags");
+    )
+    .populate("tags")
+    .populate("author", "username email");
 
-    if (!updatedBlog) {
-      return res.status(404).json({ message: "Blog not found" });
-    }
     res.status(200).json(updatedBlog);
   } catch (error) {
     next(error);
@@ -199,13 +220,18 @@ const updateBlog = async (req, res, next) => {
 
 // @desc    Delete a blog post
 // @route   DELETE /api/blogs/:id
-// @access  Public
+// @access  Private
 const deleteBlog = async (req, res, next) => {
   try {
     const blogToDelete = await Blog.findById(req.params.id);
 
     if (!blogToDelete) {
       return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if user is the author of the blog
+    if (blogToDelete.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this blog" });
     }
 
     await blogToDelete.deleteOne();

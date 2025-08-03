@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const blogRoutes = require("./routes/blogRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const { apiLimiter } = require("./middleware/rateLimiter");
 
@@ -15,11 +16,16 @@ app.use(express.json());
 // Middleware for parsing URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
+// Apply rate limiting to all requests
+app.use(apiLimiter);
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
+// Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/comments", commentRoutes);

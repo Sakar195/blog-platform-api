@@ -2,8 +2,8 @@ const Comment = require("../models/Comment");
 const Blog = require("../models/Blog");
 
 // @desc    Add a comment to a blog post
-// @route   POST /api/blogs/:id/comments
-// @access  Public
+// @route   POST /api/comments/blog/:id
+// @access  Private
 const addComment = async (req, res, next) => {
   try {
     const { text } = req.body;
@@ -14,8 +14,14 @@ const addComment = async (req, res, next) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    const newComment = new Comment({ text, blog: blogId });
-    const savedComment = await newComment.save();
+    const newComment = new Comment({ 
+      text, 
+      blog: blogId,
+      author: req.user.id // Add author from authenticated user
+    });
+    const savedComment = await newComment
+      .save()
+      .then(comment => comment.populate("author", "username email"));
 
     blog.comments.push(savedComment._id);
     await blog.save();
@@ -27,12 +33,14 @@ const addComment = async (req, res, next) => {
 };
 
 // @desc    Get all comments for a blog post
-// @route   GET /api/blogs/:id/comments
+// @route   GET /api/comments/blog/:id
 // @access  Public
 const getComments = async (req, res, next) => {
   try {
     const blogId = req.params.id;
-    const comments = await Comment.find({ blog: blogId });
+    const comments = await Comment.find({ blog: blogId })
+      .populate("author", "username email")
+      .sort({ createdAt: -1 });
     res.status(200).json(comments);
   } catch (error) {
     next(error);
@@ -41,21 +49,28 @@ const getComments = async (req, res, next) => {
 
 // @desc    Update a comment
 // @route   PUT /api/comments/:id
-// @access  Public
+// @access  Private
 const updateComment = async (req, res, next) => {
   try {
     const { text } = req.body;
     const commentId = req.params.id;
 
+    // Find comment first to check ownership
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Check if user is the author of the comment
+    if (comment.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to update this comment" });
+    }
+
     const updatedComment = await Comment.findByIdAndUpdate(
       commentId,
       { text },
       { new: true, runValidators: true }
-    );
-
-    if (!updatedComment) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
+    ).populate("author", "username email");
 
     res.status(200).json(updatedComment);
   } catch (error) {
@@ -65,13 +80,18 @@ const updateComment = async (req, res, next) => {
 
 // @desc    Delete a comment
 // @route   DELETE /api/comments/:id
-// @access  Public
+// @access  Private
 const deleteComment = async (req, res, next) => {
   try {
     const comment = await Comment.findById(req.params.id);
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Check if user is the author of the comment
+    if (comment.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
 
     // Remove comment from the associated blog

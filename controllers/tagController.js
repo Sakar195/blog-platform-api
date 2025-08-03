@@ -5,8 +5,8 @@ const Blog = require("../models/Blog");
 // @route   POST /api/tags
 // @access  Public
 const createTag = async (req, res, next) => {
+  const { name } = req.body;
   try {
-    const { name } = req.body;
     const tag = new Tag({ name });
     const savedTag = await tag.save();
     res.status(201).json(savedTag);
