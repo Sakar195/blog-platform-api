@@ -426,15 +426,3 @@ Common status codes:
 3. Use the token for protected routes
 4. Test CRUD operations for blogs and comments
 5. Verify authorization (try to edit someone else's content)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the ISC License.

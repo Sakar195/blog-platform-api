@@ -11,6 +11,9 @@ const { apiLimiter } = require("./middleware/rateLimiter");
 
 const app = express();
 
+// Trust proxy for Railway deployment
+app.set("trust proxy", 1);
+
 // Middleware for parsing JSON bodies (as sent by API clients)
 app.use(express.json());
 // Middleware for parsing URL-encoded bodies (as sent by HTML forms)
