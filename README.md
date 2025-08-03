@@ -126,6 +126,40 @@ blog-platform-api/
 
 Base URL: `http://localhost:5000/api`
 
+## Authentication
+
+This API uses JWT (JSON Web Tokens) for authentication. After login/registration, include the token in requests:
+
+```http
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+```
+
+### Protected Routes
+
+Routes that require authentication:
+
+- `POST /api/blogs` - Create blog
+- `PUT /api/blogs/:id` - Update blog (author only)
+- `DELETE /api/blogs/:id` - Delete blog (author only)
+- `POST /api/comments/blog/:id` - Add comment
+- `PUT /api/comments/:id` - Update comment (author only)
+- `DELETE /api/comments/:id` - Delete comment (author only)
+- `GET /api/auth/profile` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+
+### Public Routes
+
+Routes accessible without authentication:
+
+- `POST /api/auth/register` - Register user
+- `POST /api/auth/login` - Login user
+- `GET /api/blogs` - Get all blogs
+- `GET /api/blogs/:id` - Get single blog
+- `GET /api/comments/blog/:id` - Get comments
+- All tag routes
+
+---
+
 ### Authentication Routes
 
 #### Register User
@@ -348,38 +382,6 @@ Content-Type: application/json
 ```http
 DELETE /api/tags/:id
 ```
-
-## Authentication
-
-This API uses JWT (JSON Web Tokens) for authentication. After login/registration, include the token in requests:
-
-```http
-Authorization: Bearer YOUR_JWT_TOKEN_HERE
-```
-
-### Protected Routes
-
-Routes that require authentication:
-
-- `POST /api/blogs` - Create blog
-- `PUT /api/blogs/:id` - Update blog (author only)
-- `DELETE /api/blogs/:id` - Delete blog (author only)
-- `POST /api/comments/blog/:id` - Add comment
-- `PUT /api/comments/:id` - Update comment (author only)
-- `DELETE /api/comments/:id` - Delete comment (author only)
-- `GET /api/auth/profile` - Get user profile
-- `PUT /api/auth/profile` - Update user profile
-
-### Public Routes
-
-Routes accessible without authentication:
-
-- `POST /api/auth/register` - Register user
-- `POST /api/auth/login` - Login user
-- `GET /api/blogs` - Get all blogs
-- `GET /api/blogs/:id` - Get single blog
-- `GET /api/comments/blog/:id` - Get comments
-- All tag routes
 
 ## Rate Limiting
 
