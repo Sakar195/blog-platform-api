@@ -204,17 +204,21 @@ const updateBlog = async (req, res, next) => {
     }
 
     // Check if user is the author of the blog
-    console.log('Blog author:', blog.author);
-    console.log('Current user:', req.user.id);
-    console.log('Author toString:', blog.author ? blog.author.toString() : 'No author');
-    
+    console.log("Blog author:", blog.author);
+    console.log("Current user:", req.user.id);
+    console.log(
+      "Author toString:",
+      blog.author ? blog.author.toString() : "No author"
+    );
+
     // Handle case where blog has no author (created before authentication)
     if (!blog.author) {
-      return res.status(403).json({ 
-        message: "This blog has no author. Please re-seed the database or create a new blog." 
+      return res.status(403).json({
+        message:
+          "This blog has no author. Please re-seed the database or create a new blog.",
       });
     }
-    
+
     // Convert both to strings for proper comparison
     if (blog.author.toString() !== req.user.id.toString()) {
       return res

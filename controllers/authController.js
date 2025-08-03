@@ -120,9 +120,10 @@ const updateProfile = async (req, res, next) => {
   try {
     // Check if new username/email already exists (excluding current user)
     if (username || email) {
+      const mongoose = require("mongoose");
       const existingUser = await User.findOne({
         $and: [
-          { _id: { $ne: req.user.id } },
+          { _id: { $ne: new mongoose.Types.ObjectId(req.user.id) } },
           { $or: [{ email }, { username }] },
         ],
       });
